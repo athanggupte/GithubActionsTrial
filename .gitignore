@@ -1,0 +1,17 @@
+# Binaries
+bin/
+obj/
+
+## Project files
+# Visual Studio
+*.sln
+*.vcxproj
+*.vcxproj.filters
+
+# gmake2
+Makefile
+*.make
+
+## Editor-specific files
+# vscode
+.vs/
