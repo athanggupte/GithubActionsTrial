@@ -6,6 +6,7 @@ obj/
 # Visual Studio
 *.sln
 *.vcxproj
+*.vcxproj.user
 *.vcxproj.filters
 
 # gmake2

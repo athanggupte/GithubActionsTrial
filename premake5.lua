@@ -5,28 +5,60 @@ workspace "GithubActionsTrial"
         "Release"
     }
 
-include "build-scripts/defs.lua"
-include "build-scripts/deps.lua"
+include "scripts/defs.lua"
+include "scripts/deps.lua"
+
+newoption {
+    trigger     = "build-tests",
+    description = "Build unit tests or skip",
+    default     = "yes",
+    allowed = {
+        { "yes", "Builds the unit tests" },
+        { "no",  "Skips unit tests" }
+    }
+}
 
 -- Library
 Project "SomeLib"
     kind "StaticLib"
 
-TestProject "SomeLib"
+if _OPTIONS["build-tests"] == "yes" then
+    TestProject "SomeLib"
+end
 
 -- Main executable project
 Project "SomeApp"
     kind "ConsoleApp"
 
+    includedirs {
+        "SomeLib/src"
+    }
+
     links {
         "SomeLib"
     }
 
-TestProject "SomeApp"
+if _OPTIONS["build-tests"] == "yes" then
+    TestProject "SomeApp"
+end
 
 -- ======================================
 --           Custom actions
 -- ======================================
+newaction {
+    trigger     = "run-tests",
+    description = "Run all unit tests",
+    execute = function ()
+
+        if os.istarget "linux" then
+            os.execute "scripts/run-tests.sh"
+        elseif os.istarget "windows" then
+            os.execute "cmd.exe /c 'scripts\\run-tests.bat'"
+        end
+
+    end
+}
+
 newaction {
     trigger     = "clean",
     description = "Clean all build and output files the workspace",
@@ -49,27 +81,24 @@ newaction {
             "bin",
             "obj",
             "docs",
-            -- vscode
-            ".vs",
         }
 
+
+        os.chdir(_MAIN_SCRIPT_DIR)
         for i,v in ipairs(dirs_to_del) do
-            os.rmdir(_MAIN_SCRIPT_DIR.."/"..v)
+            os.rmdir(v)
         end
 
         if os.istarget "linux" then
             for i,v in ipairs(files_to_del) do
-                os.chdir(_MAIN_SCRIPT_DIR)
                 os.execute("rm -f \""..v.."\"")
-                os.chdir(_WORKING_DIR)
             end
         elseif os.istarget "windows" then
             for i,v in ipairs(files_to_del) do
-                os.chdir(_MAIN_SCRIPT_DIR)
                 os.execute("del /f/s/q \""..v.."\"")
-                os.chdir(_WORKING_DIR)
             end
         end
+        os.chdir(_WORKING_DIR)
 
     end
 }

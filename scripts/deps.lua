@@ -15,8 +15,18 @@ project "gtest"
     }
 
     includedirs {
-        "%{prj.location}/googletest/include"
+        "%{prj.location}/googletest/include",
+        "%{prj.location}/googletest",
     }
+    
+    filter "configurations:Debug"
+        runtime "Debug"
+        symbols "On"
+        
+    filter "configurations:Release"
+        runtime "Release"
+        optimize "On"
+
 
 --[[
     The Google test project with simple predefined main function.
@@ -31,13 +41,22 @@ project "gtest_main"
     files {
         "%{prj.location}/googletest/include/**.h",
         -- "%{prj.location}/googlemock/**.h",
-        "%{prj.location}/googletest/src/gtest-main.cc",
+        "%{prj.location}/googletest/src/gtest_main.cc",
     }
 
     includedirs {
-        "%{prj.location}/googletest/include"
+        "%{prj.location}/googletest/include",
+        "%{prj.location}/googletest",
     }
 
     links {
         "gtest"
     }
+
+    filter "configurations:Debug"
+        runtime "Debug"
+        symbols "On"
+        
+    filter "configurations:Release"
+        runtime "Release"
+        optimize "On"
