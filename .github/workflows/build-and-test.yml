@@ -7,6 +7,7 @@ jobs:
     runs-on: ${{ matrix.platform.os }}
     
     strategy:
+      fail-fast: false
       matrix:
         config: [ Debug, Release ]
         platform: 
@@ -61,6 +62,6 @@ jobs:
         if: ${{ failure() }}
         uses: actions/upload-artifact@v2
         with:
-          name: build-log
+          name: "${{ matrix.config }}/${{ matrix.platform.name }}/build.log"
           path: build.log
   

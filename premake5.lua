@@ -91,7 +91,7 @@ newaction {
 
         if os.istarget "linux" then
             for i,v in ipairs(files_to_del) do
-                os.execute("rm -f \""..v.."\"")
+                os.execute("find . -type f -name '"..v.."' -delete")
             end
         elseif os.istarget "windows" then
             for i,v in ipairs(files_to_del) do

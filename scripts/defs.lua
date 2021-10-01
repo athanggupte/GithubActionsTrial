@@ -59,6 +59,12 @@ function TestProject(name)
             runtime "Release"
             optimize "On"
 
+        filter "system:linux"
+            links {
+                "pthread",
+                "gtest"
+            }
+
         filter "*"
     group ""
 end
@@ -96,6 +102,12 @@ function TestProjectCustomStart(name)
         filter "configurations:Release"
             runtime "Release"
             optimize "On"
+
+        filter "system:linux"
+            links {
+                "pthread",
+                "gtest"
+            }
 
         filter "*"
     group ""
