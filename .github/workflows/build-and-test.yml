@@ -4,24 +4,63 @@ on: [ push, pull_request ]
 
 jobs:
   build:
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{ matrix.platform.os }}
     
     strategy:
       matrix:
-        os: [ windows-latest, ubuntu-18.04, ubuntu-20.04 ]
-        #config: [ Debug, Release ]
-        #include:
+        config: [ Debug, Release ]
+        platform: 
+          - {
+              name: "Windows latest VS 2019",
+              os: windows-latest,
+              premake: vs2019,
+              cc: msvc,
+            }
+          - {
+              name: "Ubuntu 18.04 GCC",
+              os: ubuntu-18.04,
+              premake: gmake2,
+              cc: gcc,
+            }
+          - {
+              name: "Ubuntu 20.04 GCC",
+              os: ubuntu-20.04,
+              premake: gmake2,
+              cc: gcc,
+            }
     
     steps:
       - uses: actions/checkout@v2
-
-      - name: Check files
-        run: ls
+        with:
+          submodules: recursive
 
       - name: Setup premake-5.0.0
         uses: abel0b/setup-premake@v1
+      
+      - name: Generate build files
+        run: premake5 ${{ matrix.platform.premake }} --build-tests=yes
+            
+      - name: Setup build env (Windows)
+        if: startsWith( matrix.platform.os, 'windows' )
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
 
-      - name: Print premake version
-        run: premake5 --version
+      - name: Build (MSVC)
+        if: startsWith( matrix.platform.cc, 'msvc' )
+        run: devenv GithubActionsTrial.sln /Rebuild "${{ matrix.config }}" /out build.log
+        
+      - name: Build (GCC)
+        if: startsWith( matrix.platform.cc, 'gcc' )
+        run:  |
+          set -o pipefail
+          config=$(echo ${{ matrix.config }} | awk '{print tolower($0)}')
+          make all -j$((`nproc`+1)) config=$config 2>&1 | tee build.log
 
+      - name: Upload build.log artifact (if failed)
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v2
+        with:
+          name: build-log
+          path: build.log
   
