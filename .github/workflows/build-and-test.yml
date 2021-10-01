@@ -1,0 +1,27 @@
+name: Build and Test
+
+on: [ push, pull_request ]
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    
+    strategy:
+      matrix:
+        os: [ windows-latest, ubuntu-18.04, ubuntu-20.04 ]
+        #config: [ Debug, Release ]
+        #include:
+    
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Check files
+        run: ls
+
+      - name: Setup premake-5.0.0
+        uses: abel0b/setup-premake@v1
+
+      - name: Print premake version
+        run: premake5 --version
+
+  
