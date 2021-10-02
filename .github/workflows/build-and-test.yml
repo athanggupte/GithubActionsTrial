@@ -65,7 +65,10 @@ jobs:
           name: "${{ matrix.config }}/${{ matrix.platform.name }}/build.log"
           path: build.log
 
-      - name: Run all tests
-        run: |
-          set -o pipefail
-          premake5 run-tests
+      - name: Run all tests (Windows)
+        if: startsWith( matrix.platform.os, 'windows' )
+        run: scripts\\run_tests.bat
+
+      - name: Run all tests (Ubuntu)
+        if: startsWith( matrix.platform.os, 'ubuntu' )
+        run: scripts/run_tests.sh
