@@ -53,15 +53,19 @@ jobs:
         
       - name: Build (GCC)
         if: startsWith( matrix.platform.cc, 'gcc' )
-        run:  |
+        run: |
           set -o pipefail
           config=$(echo ${{ matrix.config }} | awk '{print tolower($0)}')
           make all -j$((`nproc`+1)) config=$config 2>&1 | tee build.log
 
-      - name: Upload build.log artifact (if failed)
+      - name: Upload build.log artifact on failure
         if: ${{ failure() }}
         uses: actions/upload-artifact@v2
         with:
           name: "${{ matrix.config }}/${{ matrix.platform.name }}/build.log"
           path: build.log
-  
+
+      - name: Run all tests
+        run: |
+          set -o pipefail
+          premake5 run-tests

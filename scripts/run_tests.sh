@@ -1,3 +1,3 @@
 #!/bin/sh
 
-find bin/ -type f -path "*/tests/*/*" -exec {} \;
+find bin/ -type f -path "*-linux-*/tests/*/*" -exec {} \;

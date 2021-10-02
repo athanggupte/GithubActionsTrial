@@ -51,9 +51,10 @@ newaction {
     execute = function ()
 
         if os.istarget "linux" then
-            os.execute "scripts/run-tests.sh"
+            os.execute "scripts/run_tests.sh"
         elseif os.istarget "windows" then
-            os.execute "cmd.exe /c 'scripts\\run-tests.bat'"
+            os.execute "dir /b"
+            os.execute "scripts\\run_tests.bat"
         end
 
     end
